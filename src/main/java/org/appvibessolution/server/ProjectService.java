@@ -38,8 +38,9 @@ public class ProjectService {
             ProjectDataModel entity = new ProjectDataModel();
             entity.setRepoUrl(dto.getRepoUrl());
             entity.setFramework(dto.getFramework());
-            entity.setDatabaseName(dto.getDatabaseName());
-            entity.setDatabasePassword(dto.getDatabasePassword());
+            entity.setDbType(dto.getDbType());
+            entity.setDbUser(dto.getDbUser());
+            entity.setDbPassword(dto.getDbPassword());
             entity.setPublicUrl(dto.getPublicUrl());
 
             dto.getEnv().forEach((key, value) -> {
@@ -51,6 +52,9 @@ public class ProjectService {
 
             // Save entity
             ProjectDataModel savedEntity = repository.save(entity);
+
+            // Run jenkins file
+             boolean isBuildDone = RunJenkins(dto.getFramework(), savedEntity.getId(), dto.isDbInclude(), dto.getDbUser(), dto.getDbPassword());
 
             return mapToDTO(savedEntity);
         } catch (Exception e) {
@@ -72,8 +76,9 @@ public class ProjectService {
         dto.setId(entity.getId());
         dto.setRepoUrl(entity.getRepoUrl());
         dto.setFramework(entity.getFramework());
-        dto.setDatabaseName(entity.getDatabaseName());
-        dto.setDatabasePassword(entity.getDatabasePassword());
+        dto.setDbType(entity.getDbType());
+        dto.setDbUser(entity.getDbUser());
+        dto.setDbPassword(entity.getDbPassword());
         dto.setPublicUrl(entity.getPublicUrl());
         dto.setEnv(convertEnvListToMap(entity.getEnvironments()));
         return dto;
@@ -82,5 +87,88 @@ public class ProjectService {
     private Map<String, String> convertEnvListToMap(List<ProjectEnvironment> envList) {
         return envList.stream()
                 .collect(Collectors.toMap(ProjectEnvironment::getKey, ProjectEnvironment::getValue));
+    }
+
+    private boolean RunJenkins (String framework, Long id, boolean INCLUDE_DB, String DBUser, String DBPassword) {
+        try {
+            String jobName;
+            String xmlPath;
+
+            switch (framework.toLowerCase()) {
+                case "spring":
+                    jobName = "sboot-postgres-pipeline";
+                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
+                    break;
+                case "next":
+                    jobName = "nextjs-deploy-pipeline";
+                    xmlPath = "/home/deploy/job/nextjs-deploy-pipeline.xml";
+                    break;
+//                case "react":
+//                    jobName = "react-job";
+//                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
+//                    break;
+//                case "node":
+//                    jobName = "node-job";
+//                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
+//                    break;
+                default:
+                    throw new RuntimeException("Unsupported framework: " + framework);
+            }
+
+            String cliJar = "/home/deploy/jenkins-cli/jenkins-cli.jar";
+            String jenkinsUrl = "http://localhost:8081/";
+            String auth = "admin:77af06f09ebc4a659b4d84639ce241d7";
+
+            // Step 1: Create or update job
+            ProcessBuilder createJob = new ProcessBuilder(
+                    "bash", "-c",
+                    "java -jar " + cliJar +
+                            " -s " + jenkinsUrl +
+                            " -auth " + auth +
+                            " -http update-job " + jobName +
+                            " < " + xmlPath
+            );
+
+            createJob.inheritIO();
+            Process p1 = createJob.start();
+            p1.waitFor();
+
+            String buildCmd;
+
+            // Step 2: Trigger build with parameters
+            if (INCLUDE_DB) {
+                System.out.println("buildCmd yes db");
+                buildCmd =
+                        "java -jar " + cliJar +
+                                " -s " + jenkinsUrl +
+                                " -auth " + auth +
+                                " -http build " + jobName +
+                                " -p DEPLOY_ID=" + id.toString() +
+                                " -p DB_USER=" + DBUser +
+                                " -p DB_PASSWORD=" + DBPassword +
+                                " -p DB_NAME=" + "app_db";
+
+            } else {
+                System.out.println("buildCmd no db");
+                buildCmd =
+                        "java -jar " + cliJar +
+                                " -s " + jenkinsUrl +
+                                " -auth " + auth +
+                                " -http build " + jobName +
+                                " -p DEPLOY_ID=" + id.toString();
+            }
+
+            ProcessBuilder buildJob = new ProcessBuilder("bash", "-c", buildCmd);
+            buildJob.inheritIO();
+
+            Process p2 = buildJob.start();
+            p2.waitFor();
+
+            System.out.println("### Jenkins job triggered: " + jobName);
+            return true;
+
+        } catch (Exception ex){
+             throw new RuntimeException("Error triggering pipeline");
+        }
     }
 }

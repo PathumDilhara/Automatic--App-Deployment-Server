@@ -12,8 +12,10 @@ import java.util.Map;
 public class CreateProjectDataDTO {
     private String repoUrl;
     private String framework;
-    private String databaseName;
-    private String databasePassword;
+    private boolean isDbInclude;
+    private String dbType;
+    private String dbUser;
+    private String dbPassword;
     private String publicUrl;
     private Map<String, String> env;
 }

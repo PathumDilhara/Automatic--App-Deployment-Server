@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Data
@@ -13,8 +14,11 @@ public class RetrieveProjectDataDTO {
     private Long id;
     private String repoUrl;
     private String framework;
-    private String databaseName;
-    private String databasePassword;
+    private String isDbInclude;
+    private String dbType;
+    private String dbUser;
+    private String dbPassword;
     private String publicUrl;
     private Map<String, String> env;
+    private LocalDateTime createdAt;
 }

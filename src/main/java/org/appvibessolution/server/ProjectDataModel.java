@@ -28,11 +28,17 @@ public class ProjectDataModel {
     @Column(length = 64, nullable = false)
     private String framework;
 
-    @Column(length = 64, nullable = false)
-    private String databaseName;
+    @Column(length = 64)
+    private boolean isDbInclude;
 
-    @Column(length = 64, nullable = false)
-    private String databasePassword;
+    @Column(length = 64)
+    private String dbType;
+
+    @Column(length = 64)
+    private String dbUser;
+
+    @Column(length = 64)
+    private String dbPassword;
 
     @Column(name = "public_url", length = 512)
     private String publicUrl;
