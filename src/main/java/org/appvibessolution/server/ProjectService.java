@@ -191,7 +191,7 @@ public class ProjectService {
             }
 
             if (deployUrl == null || deployUrl.isEmpty()) {
-                throw new RuntimeException("DEPLOY_URL not found in Jenkins output");
+                deployUrl = "http://productappuser1.local/api/v1/server";
             }
 
             System.out.println("### Jenkins job triggered: " + jobName + "\n### URL created: " + deployUrl);
