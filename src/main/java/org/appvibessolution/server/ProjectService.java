@@ -96,6 +96,7 @@ public class ProjectService {
 
             switch (framework.toLowerCase()) {
                 case "spring":
+                    System.out.println("### spring-boot fretwork");
                     jobName = "sboot-postgres-pipeline";
                     xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
                     break;

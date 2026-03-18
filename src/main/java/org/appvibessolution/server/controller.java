@@ -32,6 +32,11 @@ public class controller {
         return service.saveProject(dto);
     }
 
+//    @PostMapping
+//    public boolean triggerJob (@RequestBody CreateProjectDataDTO dto){
+//        return service.RunJenkins(dto);
+//    }
+
     @DeleteMapping
     public void deleteAllProjectData (){
         service.deleteAllProjects();
