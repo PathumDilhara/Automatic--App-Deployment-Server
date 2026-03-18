@@ -166,30 +166,67 @@ public class ProjectService {
                                 " -p INCLUDE_DB=" + Boolean.toString(INCLUDE_DB).toLowerCase() +
                                 " -p REPO_URL=\"" + repoUrl + "\"";
             }
-
             ProcessBuilder buildJob = new ProcessBuilder("bash", "-c", buildCmd);
-            buildJob.inheritIO();
+// Combine stdout and stderr to avoid missing logs
+            buildJob.redirectErrorStream(true);
 
-            Process p2 = buildJob.start();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+            Process process = buildJob.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
             String line;
             String deployUrl = null;
             while ((line = reader.readLine()) != null) {
-                if (line.contains("DEPLOY_URL=")) {
-                    deployUrl = line.split("=")[1].trim();
+                System.out.println(line); // optional logging
+                line = line.trim();
+                if (line.startsWith("DEPLOY_URL=")) {
+                    deployUrl = line.substring("DEPLOY_URL=".length()).trim();
                 }
-                System.out.println(line); // optional, for logging
             }
-            p2.waitFor();
 
-            System.out.println("### Jenkins job triggered: " + jobName + "\n### url created : "+deployUrl);
+// Wait for process to complete
+            int exitCode = process.waitFor();
 
+            if (exitCode != 0) {
+                throw new RuntimeException("Jenkins job failed with exit code " + exitCode);
+            }
+
+            if (deployUrl == null || deployUrl.isEmpty()) {
+                throw new RuntimeException("DEPLOY_URL not found in Jenkins output");
+            }
+
+            System.out.println("### Jenkins job triggered: " + jobName + "\n### URL created: " + deployUrl);
+
+// Save URL to project
             ProjectDataModel model = repository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Error finding project"));
             model.setPublicUrl(deployUrl);
             repository.save(model);
 
             return true;
+
+//            ProcessBuilder buildJob = new ProcessBuilder("bash", "-c", buildCmd);
+//            buildJob.inheritIO();
+//
+//            Process p2 = buildJob.start();
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+//            String line;
+//            String deployUrl = null;
+//            while ((line = reader.readLine()) != null) {
+//                if (line.contains("DEPLOY_URL=")) {
+//                    deployUrl = line.split("=")[1].trim();
+//                }
+//                System.out.println(line); // optional, for logging
+//            }
+//            p2.waitFor();
+//
+//            System.out.println("### Jenkins job triggered: " + jobName + "\n### url created : "+deployUrl);
+//
+//            ProjectDataModel model = repository.findById(id)
+//                    .orElseThrow(() -> new RuntimeException("Error finding project"));
+//            model.setPublicUrl(deployUrl);
+//            repository.save(model);
+//
+//            return true;
 
         } catch (Exception ex){
              throw new RuntimeException("Error triggering pipeline");
