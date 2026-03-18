@@ -191,7 +191,7 @@ public class ProjectService {
             }
 
             if (deployUrl == null || deployUrl.isEmpty()) {
-                deployUrl = "http://"+ id +".local:8080/api/v1/product";
+                deployUrl = "http://10.20.11.250:8080";
             }
 
             System.out.println("### Jenkins job triggered: " + jobName + "\n### URL created: " + deployUrl);
