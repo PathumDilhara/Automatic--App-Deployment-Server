@@ -133,7 +133,8 @@ public class ProjectService {
 
             createJob.inheritIO();
             Process p1 = createJob.start();
-            p1.waitFor();
+            int exit1 = p1.waitFor();
+            if (exit1 != 0) throw new RuntimeException("Jenkins job update failed");
 
             String buildCmd;
 
@@ -148,9 +149,9 @@ public class ProjectService {
                                 " -p DEPLOY_ID=" + id.toString() +
                                 " -p DB_USER=" + DBUser +
                                 " -p DB_PASSWORD=" + DBPassword +
-                                " -p INCLUDE_DB=" + INCLUDE_DB +
+                                " -p INCLUDE_DB=" + Boolean.toString(INCLUDE_DB).toLowerCase() +
                                 " -p DB_NAME=" + "app_db" +
-                                " -p REPO_URL=" + repoUrl;
+                                " -p REPO_URL=\"" + repoUrl + "\"";
 
             } else {
                 System.out.println("buildCmd no db");
@@ -160,8 +161,8 @@ public class ProjectService {
                                 " -auth " + auth +
                                 " -http build " + jobName +
                                 " -p DEPLOY_ID=" + id.toString()+
-                                " -p INCLUDE_DB=" + INCLUDE_DB +
-                                " -p REPO_URL=" + repoUrl;
+                                " -p INCLUDE_DB=" + Boolean.toString(INCLUDE_DB).toLowerCase() +
+                                " -p REPO_URL=\"" + repoUrl + "\"";
             }
 
             ProcessBuilder buildJob = new ProcessBuilder("bash", "-c", buildCmd);
