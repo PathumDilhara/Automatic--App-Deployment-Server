@@ -98,11 +98,11 @@ public class ProjectService {
                 case "spring":
                     System.out.println("### spring-boot fretwork");
                     jobName = "sboot-postgres-pipeline";
-                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
+                    xmlPath = "~/job/sboot-postgres-pipeline.xml";
                     break;
                 case "next":
                     jobName = "nextjs-deploy-pipeline";
-                    xmlPath = "/home/deploy/job/nextjs-deploy-pipeline.xml";
+                    xmlPath = "~/job/nextjs-deploy-pipeline.xml";
                     break;
 //                case "react":
 //                    jobName = "react-job";
