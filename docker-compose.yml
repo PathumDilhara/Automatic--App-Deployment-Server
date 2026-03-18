@@ -2,6 +2,7 @@ services:
   app:
     build: .
     image: serverapp
+
     container_name: serverapp
     ports:
       - "8083:8083"
@@ -15,6 +16,9 @@ services:
     restart: always
     networks:
       - server_internal
+    volumes:
+      - /home/deploy/job:/home/deploy/job   # map host job folder to container
+      - /home/deploy/jenkins-cli:/home/deploy/jenkins-cli # map jenkins-cli jar
 
   db:
     image: postgres:15
