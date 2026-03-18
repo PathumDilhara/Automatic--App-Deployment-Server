@@ -181,12 +181,12 @@ public class ProjectService {
                 System.out.println(line); // optional, for logging
             }
             p2.waitFor();
-            
+
             System.out.println("### Jenkins job triggered: " + jobName);
 
             ProjectDataModel model = repository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Error finding project"));
-            model.setRepoUrl(deployUrl);
+            model.setPublicUrl(deployUrl);
             repository.save(model);
 
             return true;
