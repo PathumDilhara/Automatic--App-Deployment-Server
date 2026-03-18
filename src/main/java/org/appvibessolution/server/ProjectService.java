@@ -105,14 +105,14 @@ public class ProjectService {
                     jobName = "nextjs-deploy-pipeline";
                     xmlPath = "/home/deploy/job/nextjs-deploy-pipeline.xml";
                     break;
-//                case "react":
-//                    jobName = "react-job";
-//                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
-//                    break;
-//                case "node":
-//                    jobName = "node-job";
-//                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
-//                    break;
+                case "react":
+                    jobName = "react-job";
+                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
+                    break;
+                case "node":
+                    jobName = "node-pipeline";
+                    xmlPath = "/home/deploy/job/sboot-postgres-pipeline.xml";
+                    break;
                 default:
                     throw new RuntimeException("Unsupported framework: " + framework);
             }

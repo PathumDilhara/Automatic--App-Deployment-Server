@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin
+@CrossOrigin(origins = "http://10.20.11.250:3000")
 @RequestMapping(value = "api/v1/server")
 public class controller {
 

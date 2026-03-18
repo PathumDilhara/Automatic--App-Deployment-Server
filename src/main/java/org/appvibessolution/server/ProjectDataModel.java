@@ -29,7 +29,7 @@ public class ProjectDataModel {
     private String framework;
 
     @Column(length = 64)
-    private boolean dbInclude;
+    private boolean dbInclude=true;
 
     @Column(length = 64)
     private String dbType;

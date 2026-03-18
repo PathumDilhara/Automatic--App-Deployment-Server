@@ -12,7 +12,7 @@ import java.util.Map;
 public class CreateProjectDataDTO {
     private String repoUrl;
     private String framework;
-    private boolean dbInclude;
+    private boolean dbInclude=true;
     private String dbType;
     private String dbUser;
     private String dbPassword;
