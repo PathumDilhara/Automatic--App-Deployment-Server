@@ -4,6 +4,8 @@ import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -169,9 +171,24 @@ public class ProjectService {
             buildJob.inheritIO();
 
             Process p2 = buildJob.start();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(p2.getInputStream()));
+            String line;
+            String deployUrl = null;
+            while ((line = reader.readLine()) != null) {
+                if (line.contains("DEPLOY_URL=")) {
+                    deployUrl = line.split("=")[1].trim();
+                }
+                System.out.println(line); // optional, for logging
+            }
             p2.waitFor();
-
+            
             System.out.println("### Jenkins job triggered: " + jobName);
+
+            ProjectDataModel model = repository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Error finding project"));
+            model.setRepoUrl(deployUrl);
+            repository.save(model);
+
             return true;
 
         } catch (Exception ex){
