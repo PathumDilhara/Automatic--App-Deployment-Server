@@ -191,7 +191,7 @@ public class ProjectService {
             }
 
             if (deployUrl == null || deployUrl.isEmpty()) {
-                deployUrl = "http://productappuser1.local/api/v1/server";
+                deployUrl = "http://"+ id +".local/api/v1/server";
             }
 
             System.out.println("### Jenkins job triggered: " + jobName + "\n### URL created: " + deployUrl);
