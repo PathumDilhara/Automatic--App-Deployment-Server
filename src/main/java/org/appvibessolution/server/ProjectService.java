@@ -54,7 +54,7 @@ public class ProjectService {
             ProjectDataModel savedEntity = repository.save(entity);
 
             // Run jenkins file
-             boolean isBuildDone = RunJenkins(dto.getFramework(), savedEntity.getId(), dto.isDbInclude(), dto.getDbUser(), dto.getDbPassword());
+             boolean isBuildDone = RunJenkins(dto.getFramework(), savedEntity.getId(), dto.isDbInclude(), dto.getDbUser(), dto.getDbPassword(), dto.getRepoUrl());
 
             return mapToDTO(savedEntity);
         } catch (Exception e) {
@@ -76,6 +76,7 @@ public class ProjectService {
         dto.setId(entity.getId());
         dto.setRepoUrl(entity.getRepoUrl());
         dto.setFramework(entity.getFramework());
+        dto.setDbInclude(entity.isDbInclude());
         dto.setDbType(entity.getDbType());
         dto.setDbUser(entity.getDbUser());
         dto.setDbPassword(entity.getDbPassword());
@@ -89,7 +90,7 @@ public class ProjectService {
                 .collect(Collectors.toMap(ProjectEnvironment::getKey, ProjectEnvironment::getValue));
     }
 
-    private boolean RunJenkins (String framework, Long id, boolean INCLUDE_DB, String DBUser, String DBPassword) {
+    private boolean RunJenkins (String framework, Long id, boolean INCLUDE_DB, String DBUser, String DBPassword, String repoUrl) {
         try {
             String jobName;
             String xmlPath;
@@ -147,7 +148,9 @@ public class ProjectService {
                                 " -p DEPLOY_ID=" + id.toString() +
                                 " -p DB_USER=" + DBUser +
                                 " -p DB_PASSWORD=" + DBPassword +
-                                " -p DB_NAME=" + "app_db";
+                                " -p INCLUDE_DB=" + INCLUDE_DB +
+                                " -p DB_NAME=" + "app_db" +
+                                " -p REPO_URL=" + repoUrl;
 
             } else {
                 System.out.println("buildCmd no db");
@@ -156,7 +159,9 @@ public class ProjectService {
                                 " -s " + jenkinsUrl +
                                 " -auth " + auth +
                                 " -http build " + jobName +
-                                " -p DEPLOY_ID=" + id.toString();
+                                " -p DEPLOY_ID=" + id.toString()+
+                                " -p INCLUDE_DB=" + INCLUDE_DB +
+                                " -p REPO_URL=" + repoUrl;
             }
 
             ProcessBuilder buildJob = new ProcessBuilder("bash", "-c", buildCmd);

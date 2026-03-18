@@ -14,7 +14,7 @@ public class RetrieveProjectDataDTO {
     private Long id;
     private String repoUrl;
     private String framework;
-    private String isDbInclude;
+    private boolean DbInclude;
     private String dbType;
     private String dbUser;
     private String dbPassword;
