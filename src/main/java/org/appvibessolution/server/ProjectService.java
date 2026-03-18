@@ -116,7 +116,7 @@ public class ProjectService {
             }
 
             String cliJar = "/home/deploy/jenkins-cli/jenkins-cli.jar";
-            String jenkinsUrl = "http://localhost:8081/";
+            String jenkinsUrl = "http://10.20.11.250:8081/";
             String auth = "admin:77af06f09ebc4a659b4d84639ce241d7";
 
             // Step 1: Create or update job
