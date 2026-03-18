@@ -191,7 +191,13 @@ public class ProjectService {
             }
 
             if (deployUrl == null || deployUrl.isEmpty()) {
-                deployUrl = "http://10.20.11.250:8080";
+                String port = "";
+                if (framework.equals("spring")){
+                    port = "8080";
+                } else if (framework.equals("react")) {
+                    port = "3000";
+                }
+                deployUrl = "http://10.20.11.250:"+port;
             }
 
             System.out.println("### Jenkins job triggered: " + jobName + "\n### URL created: " + deployUrl);
