@@ -182,7 +182,7 @@ public class ProjectService {
             }
             p2.waitFor();
 
-            System.out.println("### Jenkins job triggered: " + jobName);
+            System.out.println("### Jenkins job triggered: " + jobName + "\n### url created : "+deployUrl);
 
             ProjectDataModel model = repository.findById(id)
                     .orElseThrow(() -> new RuntimeException("Error finding project"));
